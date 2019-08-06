@@ -52,7 +52,10 @@ class agj_acf_field_geojson extends acf_field {
 		*/
 		
 		$this->defaults = array(
-			'font_size'	=> 14,
+			'height'	=> 300,
+			'lat'		=> -74.005941,
+			'lng'		=> 40.712784,
+			'zoom'		=> 13
 		);
 		
 		
@@ -105,13 +108,31 @@ class agj_acf_field_geojson extends acf_field {
 		*/
 		
 		acf_render_field_setting( $field, array(
-			'label'			=> __('Font Size','acf-geojson'),
-			'instructions'	=> __('Customise the input font size','acf-geojson'),
+			'name'			=> 'height',
+			'label'			=> __('Map height','acf-geojson'),
+			'instructions'	=> __('Define the height of the displayed map in pixels','acf-geojson'),
 			'type'			=> 'number',
-			'name'			=> 'font_size',
-			'prepend'		=> 'px',
+			'append'		=> 'px',
 		));
-
+		
+		acf_render_field_setting( $field, array(
+			'name'			=> 'lat',
+			'label'			=> __('Latitude ','acf-geojson'),
+			'instructions'	=> __('Define the default location latitude ','acf-geojson'),
+			'type'			=> 'text',
+		));
+		acf_render_field_setting( $field, array(
+			'name'			=> 'lng',
+			'label'			=> __('Longitude','acf-geojson'),
+			'instructions'	=> __('Define the default location longitude','acf-geojson'),
+			'type'			=> 'text',
+		));
+		acf_render_field_setting( $field, array(
+			'name'			=> 'zoom',
+			'label'			=> __('Zoom level','acf-geojson'),
+			'instructions'	=> __('Define the default zoom level','acf-geojson'),
+			'type'			=> 'number',
+		));
 	}
 	
 	
@@ -142,15 +163,25 @@ class agj_acf_field_geojson extends acf_field {
 		echo '<pre>';
 			print_r( $field );
 		echo '</pre>';
+
+		/**
+		 * Display the map markup, with associated height.
+		 */
+		echo '<div 
+			id="'.$field['key'].'_geojson-map" 
+			class="geojson-map" 
+			' . ($field['height'] ? 'style="height:'. $field['height'] . 'px"' : '') . '
+			' . ($field['lat'] ? 'data-lat="'. $field['lat'] . '"' : '') . '
+			' . ($field['lng'] ? 'data-lng="'. $field['lng'] . '"' : '') . '
+			' . ($field['zoom'] ? 'data-zoom="'. $field['zoom'] . '"' : '') . '
+			></div>';
 		
 		
 		/*
 		*  Create a simple text input using the 'font_size' setting.
+		*  <input type="text" name="<?php echo esc_attr($field['name']) ?>" value="<?php echo esc_attr($field['value']) ?>" style="font-size:<?php echo $field['font_size'] ?>px;" />
 		*/
 		
-		?>
-		<input type="text" name="<?php echo esc_attr($field['name']) ?>" value="<?php echo esc_attr($field['value']) ?>" style="font-size:<?php echo $field['font_size'] ?>px;" />
-		<?php
 	}
 	
 		
@@ -168,8 +199,6 @@ class agj_acf_field_geojson extends acf_field {
 	*  @return	n/a
 	*/
 
-	/*
-	
 	function input_admin_enqueue_scripts() {
 		
 		// vars
@@ -177,18 +206,18 @@ class agj_acf_field_geojson extends acf_field {
 		$version = $this->settings['version'];
 		
 		
-		// register & include JS
-		wp_register_script('acf-geojson', "{$url}assets/js/input.js", array('acf-input'), $version);
-		wp_enqueue_script('acf-geojson');
+		/* LeafletJS */
+		wp_register_script('acf-geojson-leaflet-script', "{$url}assets/js/leaflet.js", array(), $version);
+		wp_enqueue_script('acf-geojson-leaflet-script');
+		wp_register_style('acf-geojson-leaflet-style', "{$url}assets/css/leaflet.css", array(), $version);
+		wp_enqueue_style('acf-geojson-leaflet-style');
 		
-		
-		// register & include CSS
-		wp_register_style('acf-geojson', "{$url}assets/css/input.css", array('acf-input'), $version);
-		wp_enqueue_style('acf-geojson');
-		
+		/* ACF GeoJSON */
+		wp_register_script('acf-geojson-script', "{$url}assets/js/acf-geojson.js", array('acf-geojson-leaflet-script'), $version);
+		wp_enqueue_script('acf-geojson-script');
+		wp_register_style('acf-geojson-style', "{$url}assets/css/acf-geojson.css", array('acf-geojson-leaflet-style'), $version);
+		wp_enqueue_style('acf-geojson-style');
 	}
-	
-	*/
 	
 	
 	/*

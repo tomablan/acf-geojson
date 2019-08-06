@@ -1,6 +1,5 @@
 (function($){
 	
-	
 	/**
 	*  initialize_field
 	*
@@ -14,9 +13,22 @@
 	*/
 	
 	function initialize_field( $field ) {
+		/**
+		 * @todo dynamize tile
+		 * @todo dynamize center
+		 * @todo dynamize zoom
+		 */
 		
-		//$field.doStuff();
-		
+		/* Initializes map */
+		var the_field_map = $field.find('.geojson-map[id]');
+		var the_map =  L.map(the_field_map.attr('id')).setView([the_field_map.data('lat'), the_field_map.data('lng')], the_field_map.data('zoom'));
+
+		/* Set the tile */
+		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+			maxZoom: 18,
+		}).addTo(the_map);
+
 	}
 	
 	
