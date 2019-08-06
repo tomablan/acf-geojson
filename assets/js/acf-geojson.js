@@ -29,6 +29,9 @@
 			maxZoom: 18,
 		}).addTo(the_map);
 
+		/* Bug : For unknown reasons, tiles doesn't load properly, so we call a refresh */
+		the_map._onResize();
+
 	}
 	
 	
